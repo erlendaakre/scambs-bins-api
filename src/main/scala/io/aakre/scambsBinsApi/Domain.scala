@@ -21,7 +21,10 @@ trait ICalParsers extends RegexParsers {
   def eventStartLine: Parser[String]      = "BEGIN:VEVENT"
   def uidLine : Parser[String]            = "UID:(.+)".r
   def timeStampLine : Parser[String]      = "DTSTAMP:(.+)".r
-  def dateLine : Parser[String]           = "DTSTART;VALUE=DATE:" ~> "[0-9]{8}".r
+  def dateLine : Parser[Date]             = "DTSTART;VALUE=DATE:" ~> year ~ month ~ day            ^^ { case y ~ m ~ d => parseDate(y,m,d) }
+  def year : Parser[Int]                  = "[0-9]{4}".r                                           ^^ { _.toInt }
+  def month : Parser[Int]                 = "[0|1][0-9]".r                                         ^^ { _.toInt }
+  def day : Parser[Int]                   = "[0-3][0-9]".r                                         ^^ { _.toInt }
   def summaryLine : Parser[Bin]           = "SUMMARY:" ~> binType                                  ^^ { parseSummary }
   def binType: Parser[String]             = "(Black|Blue|Green)".r <~ "Bin Collection"
   def eventEndLine: Parser[String]        = "END:VEVENT"
@@ -35,10 +38,7 @@ trait ICalParsers extends RegexParsers {
     Collection(Date(2019,2,20), Seq(BlueBin))
   }
 
-  private def parseDate(s: String) : Date = {
-    // TODO make parser for this?
-    Date(2019,2,20)
-  }
+  private def parseDate(y: Int, m: Int, d: Int) = Date(y,m,d)
 
   private def parseSummary(s: String) : Bin = {
     s match {

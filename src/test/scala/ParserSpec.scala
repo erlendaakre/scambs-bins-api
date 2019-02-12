@@ -67,7 +67,7 @@ class ParserSpec extends FlatSpec with Matchers with ICalParsers {
     val p = parse(dateLine, "DTSTART;VALUE=DATE:20190215")
     p.successful shouldBe true
     p.isEmpty shouldBe false
-    p.get shouldEqual "20190215" // TODO this parser should return Date
+    p.get shouldEqual Date(2019,2,15)
   }
 
   it should "not parse an event date line with invalid date" in {
