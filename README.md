@@ -8,11 +8,17 @@ Primarily made for smart home integration (reminding me to take out the right co
 
 uses Scala, Cats and Http4s
 
-*NOTE: currently WIP and not working*
+**NOTE: currently WIP and not working**
 
+## TODO
+- [ ] make composed event parser that repeats until lastLine
+- [ ] merge resulting Collection list on Date to get list of Blue + Green bins for certain dates
+- [ ] cache iCal file to avoid making too many responses
 
 ## Setup
 TODO describe getting link/ID from scambs website
+   https://refusecalendarapi.azurewebsites.net/calendar/ical/nnnnnn
+
 TODO how to run? sbt or fat jar?
 TODO make fat jar and put on java docker image?
 TODO set up CI to notify if test fails (format changes)

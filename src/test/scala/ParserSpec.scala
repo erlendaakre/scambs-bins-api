@@ -56,48 +56,60 @@ class ParserSpec extends FlatSpec with Matchers with ICalParsers {
   }
 
   it should "match an event UID line" in {
-    parse(eventUIDLine, "UID:2d816fda-fafc-4746-abcf-12b4411162d6@192.124.249.105").successful shouldBe true
+    parse(uidLine, "UID:2d816fda-fafc-4746-abcf-12b4411162d6@192.124.249.105").successful shouldBe true
   }
 
   it should "match an event timestamp" in {
-    parse(eventDateTimestampLine, "DTSTAMP:20190211T122046Z").successful shouldBe true
+    parse(timeStampLine, "DTSTAMP:20190211T122046Z").successful shouldBe true
   }
 
-  it should "match an event date line" in {
-    parse(eventDateLine, "DTSTART;VALUE=DATE:20190215").successful shouldBe true
+  it should "parse an event date line with valid date" in {
+    val p = parse(dateLine, "DTSTART;VALUE=DATE:20190215")
+    p.successful shouldBe true
+    p.isEmpty shouldBe false
+    p.get shouldEqual "20190215" // TODO this parser should return Date
+  }
 
-
+  it should "not parse an event date line with invalid date" in {
+    val p = parse(dateLine, "DTSTART;VALUE=DATE:2019-02-05")
+    p.successful shouldBe false
+    p.isEmpty shouldBe true
   }
 
   it should "parse an event summary line for black bins" in {
-    val p = parse(eventSummaryLine, "SUMMARY:Black Bin Collection")
+    val p = parse(summaryLine, "SUMMARY:Black Bin Collection")
     p.successful shouldBe true
-    println("=========BLACK BIN TEST ==================") // TODO delete
-    println(p)
+    p.isEmpty shouldBe false
+    p.get shouldBe BlackBin
   }
 
   it should "parse an event summary line for blue bins" in {
-    parse(eventSummaryLine, "SUMMARY:Blue Bin Collection").successful shouldBe true
+    val p = parse(summaryLine, "SUMMARY:Blue Bin Collection")
+    p.successful shouldBe true
+    p.isEmpty shouldBe false
+    p.get shouldBe BlueBin
   }
 
   it should "parse an event summary line for green bins" in {
-    parse(eventSummaryLine, "SUMMARY:Green Bin Collection").successful shouldBe true
+    val p = parse(summaryLine, "SUMMARY:Green Bin Collection")
+    p.successful shouldBe true
+    p.isEmpty shouldBe false
+    p.get shouldBe GreenBin
+  }
+
+  it should "not parse an event summary line for unknown bins" in {
+    val p = parse(summaryLine, "SUMMARY:Purple Bin Collection")
+    p.successful shouldBe false
+    p.isEmpty shouldBe true
   }
 
   it should "match an event end line" in {
     parse(eventEndLine, "END:VEVENT").successful shouldBe true
   }
 
-  it should "match a multiline event entry" in {}
+  it should "parse a multiline event entry" in {}
 
-  it should "match several multiline events in" {}
+  it should "parse several multiline events" in {}
 
-
-
-  """
-    |
-    |
-    |
-    |
-    |"""
+  it should "parse an entire iCal file (header+events)" in {}
 }
