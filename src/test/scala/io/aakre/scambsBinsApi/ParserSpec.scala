@@ -12,13 +12,22 @@ class ParserSpec extends FlatSpec with Matchers with ICalParsers {
       |X-WR-CALDESC:Bins Schedule
       |X-WR-TIMEZONE:Europe/London""".stripMargin
 
-  val TestEvent: String =
+  val TestEvent1: String =
     """BEGIN:VEVENT
       |UID:2d816fda-fafc-4746-abcf-12b4411162d6@192.124.249.105
       |DTSTAMP:20190211T122046Z
       |DTSTART;VALUE=DATE:20190214
       |SUMMARY:Green Bin Collection
       |END:VEVENT""".stripMargin
+
+  val TestEvent2: String =
+    """BEGIN:VEVENT
+      |UID:2d816fda-fafc-4746-abcf-12b4411162d6@192.124.249.105
+      |DTSTAMP:20190211T122046Z
+      |DTSTART;VALUE=DATE:20190214
+      |SUMMARY:Blue Bin Collection
+      |END:VEVENT""".stripMargin
+
 
   // ----- Header tests -----
   it should "match the first line" in {
@@ -108,13 +117,20 @@ class ParserSpec extends FlatSpec with Matchers with ICalParsers {
   }
 
   it should "parse a multiline event entry" in {
-    val p = parse(eventParser, TestEvent)
+    val p = parse(eventParser, TestEvent1)
     p.successful shouldBe true
     p.isEmpty shouldBe false
     p.get shouldEqual Collection(Date(2019,2,14), Seq(GreenBin))
   }
 
-  it should "parse several multiline events" in {}
+  it should "parse several multiline events" in {
+    val p = parse(eventsParser, TestEvent1 + "\n" + TestEvent2)
+    p.successful shouldBe true
+    p.isEmpty shouldBe false
+    p.get.length shouldBe 2
+    p.get should contain ( Collection(Date(2019,2,14), Seq(GreenBin)) )
+    p.get should contain ( Collection(Date(2019,2,14), Seq(BlueBin)) )
+  }
 
   it should "parse an entire iCal file (header+events)" in {}
 }
