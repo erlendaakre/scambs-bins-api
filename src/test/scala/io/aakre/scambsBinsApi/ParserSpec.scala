@@ -16,8 +16,8 @@ class ParserSpec extends FlatSpec with Matchers with ICalParsers {
     """BEGIN:VEVENT
       |UID:2d816fda-fafc-4746-abcf-12b4411162d6@192.124.249.105
       |DTSTAMP:20190211T122046Z
-      |DTSTART;VALUE=DATE:20190215
-      |SUMMARY:Black Bin Collection
+      |DTSTART;VALUE=DATE:20190214
+      |SUMMARY:Green Bin Collection
       |END:VEVENT""".stripMargin
 
   // ----- Header tests -----
@@ -107,7 +107,12 @@ class ParserSpec extends FlatSpec with Matchers with ICalParsers {
     parse(eventEndLine, "END:VEVENT").successful shouldBe true
   }
 
-  it should "parse a multiline event entry" in {}
+  it should "parse a multiline event entry" in {
+    val p = parse(eventParser, TestEvent)
+    p.successful shouldBe true
+    p.isEmpty shouldBe false
+    p.get shouldEqual Collection(Date(2019,2,14), Seq(GreenBin))
+  }
 
   it should "parse several multiline events" in {}
 

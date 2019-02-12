@@ -16,29 +16,24 @@ trait ICalParsers extends RegexParsers {
   def descLine: Parser[String]            = "X-WR-CALDESC:Bins Schedule"
   def timezoneLine: Parser[String]        = "X-WR-TIMEZONE:Europe/London"
   def headerParser: Parser[Unit]          = calendarStartLine ~ secondLine ~ versionLine ~
-                                            nameLine ~ descLine ~ timezoneLine                     ^^ { _ => ()  }
+                                            nameLine ~ descLine ~ timezoneLine                ^^ { _ => ()  }
 
   def eventStartLine: Parser[String]      = "BEGIN:VEVENT"
   def uidLine : Parser[String]            = "UID:(.+)".r
   def timeStampLine : Parser[String]      = "DTSTAMP:(.+)".r
-  def dateLine : Parser[Date]             = "DTSTART;VALUE=DATE:" ~> year ~ month ~ day            ^^ { case y ~ m ~ d => parseDate(y,m,d) }
-  def year : Parser[Int]                  = "[0-9]{4}".r                                           ^^ { _.toInt }
-  def month : Parser[Int]                 = "[0|1][0-9]".r                                         ^^ { _.toInt }
-  def day : Parser[Int]                   = "[0-3][0-9]".r                                         ^^ { _.toInt }
-  def summaryLine : Parser[Bin]           = "SUMMARY:" ~> binType                                  ^^ { parseSummary }
+  def dateLine : Parser[Date]             = "DTSTART;VALUE=DATE:" ~> year ~ month ~ day ^^
+                                            { case y ~ m ~ d => Date(y,m,d) }
+  def year : Parser[Int]                  = "[0-9]{4}".r                                      ^^ { _.toInt }
+  def month : Parser[Int]                 = "[0|1][0-9]".r                                    ^^ { _.toInt }
+  def day : Parser[Int]                   = "[0-3][0-9]".r                                    ^^ { _.toInt }
+  def summaryLine : Parser[Bin]           = "SUMMARY:" ~> binType                             ^^ { parseSummary }
   def binType: Parser[String]             = "(Black|Blue|Green)".r <~ "Bin Collection"
   def eventEndLine: Parser[String]        = "END:VEVENT"
-  def eventParser: Parser[Collection]     = "TODO:WRITE:ME"                                        ^^ { parseEvent }
+  def eventParser: Parser[Collection]     = eventStartLine ~ uidLine ~ timeStampLine ~
+                                            dateLine ~ summaryLine ~ eventEndLine             ^^
+                                            { case _ ~ _ ~ _ ~ d ~ b ~ _ => Collection(d,Seq(b)) }
 
   def calendarEndLine: Parser[String]     = "END:VCALENDAR"
-
-
-  private def parseEvent(s: String) : Collection = {
-    // TODO
-    Collection(Date(2019,2,20), Seq(BlueBin))
-  }
-
-  private def parseDate(y: Int, m: Int, d: Int) = Date(y,m,d)
 
   private def parseSummary(s: String) : Bin = {
     s match {
