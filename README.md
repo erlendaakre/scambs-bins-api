@@ -11,9 +11,13 @@ uses Scala, Cats and Http4s
 **NOTE: currently WIP and not working**
 
 ## TODO
-- [ ] make composed event parser that repeats until lastLine
+- [x] make composed event parser that repeats until lastLine
 - [ ] merge resulting Collection list on Date to get list of Blue + Green bins for certain dates
 - [ ] cache iCal file to avoid making too many responses
+- [ ] config file for timeout + url + location id
+- [ ] define rest api endpoints
+- [ ] create algorithms for doing queries
+- [ ] wire up everything in http4s
 
 ## Setup
 TODO describe getting link/ID from scambs website

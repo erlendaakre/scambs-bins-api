@@ -2,32 +2,7 @@ package io.aakre.scambsBinsApi
 
 import org.scalatest._
 
-class ParserSpec extends FlatSpec with Matchers with ICalParsers {
-
-  val TestHeader: String =
-    """BEGIN:VCALENDAR
-      |PRODID:-//192.124.249.105//Waste Calendar Generator//
-      |VERSION:2.0
-      |X-WR-CALNAME:Bins Schedule
-      |X-WR-CALDESC:Bins Schedule
-      |X-WR-TIMEZONE:Europe/London""".stripMargin
-
-  val TestEvent1: String =
-    """BEGIN:VEVENT
-      |UID:2d816fda-fafc-4746-abcf-12b4411162d6@192.124.249.105
-      |DTSTAMP:20190211T122046Z
-      |DTSTART;VALUE=DATE:20190214
-      |SUMMARY:Green Bin Collection
-      |END:VEVENT""".stripMargin
-
-  val TestEvent2: String =
-    """BEGIN:VEVENT
-      |UID:2d816fda-fafc-4746-abcf-12b4411162d6@192.124.249.105
-      |DTSTAMP:20190211T122046Z
-      |DTSTART;VALUE=DATE:20190214
-      |SUMMARY:Blue Bin Collection
-      |END:VEVENT""".stripMargin
-
+class ParserSpec extends FlatSpec with Matchers with ICalParsers with TestData {
 
   // ----- Header tests -----
   it should "match the first line" in {
@@ -76,7 +51,7 @@ class ParserSpec extends FlatSpec with Matchers with ICalParsers {
     val p = parse(dateLine, "DTSTART;VALUE=DATE:20190215")
     p.successful shouldBe true
     p.isEmpty shouldBe false
-    p.get shouldEqual Date(2019,2,15)
+    p.get shouldEqual Date(2019, 2, 15)
   }
 
   it should "not parse an event date line with invalid date" in {
@@ -116,11 +91,13 @@ class ParserSpec extends FlatSpec with Matchers with ICalParsers {
     parse(eventEndLine, "END:VEVENT").successful shouldBe true
   }
 
+
+  //----- Multi Event / Full Calendar Tests -----
   it should "parse a multiline event entry" in {
     val p = parse(eventParser, TestEvent1)
     p.successful shouldBe true
     p.isEmpty shouldBe false
-    p.get shouldEqual Collection(Date(2019,2,14), Seq(GreenBin))
+    p.get shouldEqual Collection(Date(2019, 2, 14), Seq(GreenBin))
   }
 
   it should "parse several multiline events" in {
@@ -128,9 +105,19 @@ class ParserSpec extends FlatSpec with Matchers with ICalParsers {
     p.successful shouldBe true
     p.isEmpty shouldBe false
     p.get.length shouldBe 2
-    p.get should contain ( Collection(Date(2019,2,14), Seq(GreenBin)) )
-    p.get should contain ( Collection(Date(2019,2,14), Seq(BlueBin)) )
+    p.get should contain(Collection(Date(2019, 2, 14), Seq(GreenBin)))
+    p.get should contain(Collection(Date(2019, 2, 14), Seq(BlueBin)))
   }
 
-  it should "parse an entire iCal file (header+events)" in {}
+  it should "parse an entire calendar (header+events)" in {
+    val p = parse(iCalParser, TestCalendar)
+    p.successful shouldBe true
+    p.isEmpty shouldBe false
+    p.get.length shouldBe 6
+    p.get should contain(Collection(Date(2019, 2, 15), Seq(BlackBin)))
+    p.get should contain(Collection(Date(2019, 3, 15), Seq(BlackBin)))
+    p.get.count(_.bins.contains(GreenBin)) shouldBe 1
+    p.get.count(_.bins.contains(BlueBin)) shouldBe 2
+    p.get.count(_.bins.contains(BlackBin)) shouldBe 3
+  }
 }
