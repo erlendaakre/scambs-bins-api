@@ -8,7 +8,7 @@ object Network {
 }
 
 import scala.util.parsing.combinator._
-trait ICalParsers extends RegexParsers {
+object ICalParsers extends RegexParsers {
   def calendarStartLine: Parser[String]     = "BEGIN:VCALENDAR"
   def secondLine: Parser[String]            = "PRODID:(.+)//Waste Calendar Generator//".r
   def versionLine: Parser[String]           = "VERSION:2.0"

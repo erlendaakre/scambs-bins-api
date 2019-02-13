@@ -1,8 +1,9 @@
 package io.aakre.scambsBinsApi
 
 import org.scalatest._
+import ICalParsers._
 
-class ParserSpec extends FlatSpec with Matchers with ICalParsers with TestData {
+class ParserSpec extends FlatSpec with Matchers with TestData {
 
   // ----- Header tests -----
   it should "match the first line" in {

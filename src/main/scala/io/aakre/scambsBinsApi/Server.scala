@@ -21,11 +21,12 @@ object Server extends IOApp {
   val binService: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> Root / "bins" =>
       BlazeClientBuilder[IO](global).resource.use { client =>
-        val result = for {
-          rawIcal <- Network.readFromUrl(scambsIcalUrl, client).unsafeRunSync()
-          parsed <- "TODO finish parser, then parse ical into sensible domain and serialize to json"
-        } yield rawIcal
-        Ok(result)
+        val testProg = for {
+          rawIcal <- Network.readFromUrl(scambsIcalUrl, client)
+          parsed <- IO(ICalParsers.parse(ICalParsers.iCalParser, rawIcal))
+        } yield parsed
+
+        Ok(testProg.unsafeRunSync().get.toList.toString)
       }
   }
 
