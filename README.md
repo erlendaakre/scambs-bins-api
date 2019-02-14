@@ -8,11 +8,13 @@ Primarily made for smart home integration (reminding me to take out the right co
 
 uses Scala, Cats and Http4s
 
-**NOTE: currently WIP and not working**
+**NOTE: currently WIP, Parser done but REST api not started***
+
+\* IE: it will turn a iCal file into `Seq[(Date, Seq[Bins])]`
 
 ## TODO
 - [x] make composed event parser that repeats until lastLine
-- [ ] merge resulting Collection list on Date to get list of Blue + Green bins for certain dates
+- [x] merge resulting Collection list on Date to get list of Blue + Green bins for certain dates
 - [ ] cache iCal file to avoid making too many responses
 - [ ] config file for timeout + url + location id
 - [ ] define rest api endpoints

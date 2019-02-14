@@ -27,7 +27,7 @@ object Server extends IOApp {
           prepared <- IO( Logic.joinAndSort(parsed.get))
         } yield prepared
 
-        Ok(testProg.unsafeRunSync().toList.toString)
+        Ok(testProg.unsafeRunSync().toString)
       }
   }
 
