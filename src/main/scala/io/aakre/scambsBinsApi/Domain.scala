@@ -34,15 +34,21 @@ object ICalParsers extends RegexParsers {
                                               { case _ ~ _ ~ _ ~ d ~ b ~ _ => Collection(d,Seq(b)) }
 
   def eventsParser: Parser[Seq[Collection]] = eventParser.*
-  def iCalParser: Parser[Seq[Collection]]   = headerParser ~> eventsParser <~ calendarEndLine
+  def iCalParser: Parser[Seq[Collection]]   = headerParser ~> eventsParser <~ calendarEndLine   ^^ { prepareCols }
 
-  def calendarEndLine: Parser[String]     = "END:VCALENDAR"
+  def calendarEndLine: Parser[String]       = "END:VCALENDAR"
 
-  private def parseSummary(s: String): Bin = {
-    s match {
-      case "Blue" => BlueBin
-      case "Green" => GreenBin
-      case "Black" => BlackBin
-    }
+  private def parseSummary(s: String): Bin = s match {
+    case "Blue" => BlueBin
+    case "Green" => GreenBin
+    case "Black" => BlackBin
   }
+
+  private val prepareCols = joinBinsOnDate _ andThen sortByDate
+
+  private def joinBinsOnDate(cs: Seq[Collection]) =
+    cs.groupBy(_.date).map(t => Collection(t._1, t._2.flatMap(_.bins))).toSeq
+
+  private def sortByDate(cs: Seq[Collection]) = cs.sortBy(c => c.date)
+
 }
