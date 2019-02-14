@@ -24,9 +24,10 @@ object Server extends IOApp {
         val testProg = for {
           rawIcal <- Network.readFromUrl(scambsIcalUrl, client)
           parsed <- IO(ICalParsers.parse(ICalParsers.iCalParser, rawIcal))
-        } yield parsed
+          prepared <- IO( Logic.joinAndSort(parsed.get))
+        } yield prepared
 
-        Ok(testProg.unsafeRunSync().get.toList.toString)
+        Ok(testProg.unsafeRunSync().toList.toString)
       }
   }
 
