@@ -1,5 +1,6 @@
 val CatsVersion = "1.2.0"
 val Http4sVersion = "0.20.0-SNAPSHOT"
+val CirceVersion = "0.11.0"
 val ScalaTestVersion = "3.0.5"
 val ParserCombinatorVersion = "1.1.1"
 
@@ -16,12 +17,19 @@ lazy val root = (project in file("."))
     name := "scambs-bins-api",
     libraryDependencies ++= Seq(
       "org.typelevel"          %% "cats-effect"                        % CatsVersion,
-      "org.http4s"             %% "http4s-blaze-server"                % Http4sVersion,
-      "org.http4s"             %% "http4s-blaze-client"                % Http4sVersion,
-      "org.http4s"             %% "http4s-dsl"                         % Http4sVersion,
       "org.scala-lang.modules" %% "scala-parser-combinators"           % ParserCombinatorVersion,
       "org.scalatest"          %% "scalatest"                          % ScalaTestVersion
-    )
+    ),
+    libraryDependencies ++= Seq(
+      "org.http4s"             %% "http4s-blaze-server",
+      "org.http4s"             %% "http4s-blaze-client",
+      "org.http4s"             %% "http4s-dsl"
+    ).map(_ % Http4sVersion),
+    libraryDependencies ++= Seq(
+      "io.circe"               %% "circe-core",
+      "io.circe"               %% "circe-generic",
+      "io.circe"               %% "circe-parser"
+    ).map(_ % CirceVersion)
   )
 
 scalacOptions ++= Seq(
