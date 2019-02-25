@@ -4,7 +4,11 @@ import cats.effect.IO
 import org.http4s.client._
 
 object Network {
-  def readFromUrl(url: String, c: Client[IO]): IO[String] = c.expect[String](url)
+  def downloadCalendarFromUrl(url: String, c: Client[IO]): IO[Download] = for {
+    data <- c.expect[String](url)
+    time <- IO(System.currentTimeMillis())
+    _ <- IO(println("Downloaded calendar at " + time))
+  } yield Download(time,data)
 }
 
 import scala.util.parsing.combinator._

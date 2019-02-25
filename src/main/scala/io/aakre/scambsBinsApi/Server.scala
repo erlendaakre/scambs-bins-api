@@ -1,7 +1,8 @@
 package io.aakre.scambsBinsApi
 
-import cats.data.Kleisli
+import cats.data.{Kleisli, State}
 import cats.effect._
+import cats.effect.concurrent.Ref
 import cats.implicits._
 import org.http4s.server.blaze._
 import org.http4s.implicits._
@@ -9,8 +10,9 @@ import org.http4s._
 import org.http4s.dsl.io._
 import org.http4s.server.Router
 import org.http4s.client.blaze._
-
-import io.circe._, io.circe.generic.auto._, io.circe.syntax._
+import io.circe._
+import io.circe.generic.auto._
+import io.circe.syntax._
 
 import scala.concurrent.ExecutionContext.global
 
@@ -20,18 +22,26 @@ object Server extends IOApp {
 
   val scambsIcalUrl = "https://refusecalendarapi.azurewebsites.net/calendar/ical/137912"
 
-  implicit val encodeDate: Encoder[Bin] = (a: Bin) =>  Encoder.encodeString(a.toString) //Json.fromString(a.toString)
+  val calendarCache: IO[Ref[IO, Download]] = Ref.of[IO,Download](Download(0, ""))
+
+  implicit val encodeDate: Encoder[Bin] = (a: Bin) =>  Encoder.encodeString(a.toString)
 
   val binService: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> Root / "bins" =>
       BlazeClientBuilder[IO](global).resource.use { client =>
-        val testProg = for {
-          rawIcal <- Network.readFromUrl(scambsIcalUrl, client)
-          parsed <- IO(ICalParsers.parse(ICalParsers.iCalParser, rawIcal))
+        val getCalendarProg = for {
+          currentTime <- IO(System.currentTimeMillis())
+          cache <- calendarCache.flatMap(_.get)
+          _ <- IO(println(s"Current Time   : $currentTime"))
+          _ <- IO(println(s"cache time     : + " + cache.time))
+          download <- if(cache.time + 20000 < currentTime) Network.downloadCalendarFromUrl(scambsIcalUrl, client) else IO(cache)
+          _ <- IO(println(s"download time  : + " + download.time))
+          _ <- calendarCache.map(_.set(download))
+          parsed <- IO(ICalParsers.parse(ICalParsers.iCalParser, download.content))
           prepared <- IO( Logic.joinAndSort(parsed.get))
         } yield prepared.asJson.spaces2
 
-        Ok(testProg.unsafeRunSync())
+        Ok(getCalendarProg.unsafeRunSync())
       }
   }
 

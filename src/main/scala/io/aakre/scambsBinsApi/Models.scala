@@ -12,3 +12,5 @@ case class Date(year: Int, month: Int, day: Int) extends Ordered[Date] {
 }
 
 case class Collection(date: Date, bins: Seq[Bin])
+
+case class Download(time: Long, content: String)
