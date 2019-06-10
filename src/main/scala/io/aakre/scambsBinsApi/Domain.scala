@@ -5,7 +5,7 @@ import org.http4s.client._
 
 object Network {
   def downloadCalendarFromUrl(url: String, c: Client[IO]): IO[Download] = for {
-    data <- c.expect[String](url)
+    data <- try { c.expect[String](url) } catch { _ => ""}
     time <- IO(System.currentTimeMillis())
     _ <- IO(println("Downloaded calendar at " + time))
   } yield Download(time,data)

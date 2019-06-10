@@ -15,6 +15,7 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 
 import scala.concurrent.ExecutionContext.global
+import scala.concurrent.duration._
 
 object Server extends IOApp {
 
@@ -28,7 +29,7 @@ object Server extends IOApp {
 
   val binService: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> Root / "bins" =>
-      BlazeClientBuilder[IO](global).resource.use { client =>
+      BlazeClientBuilder[IO](global).withRequestTimeout(5.seconds).resource.use { client =>
         val getCalendarProg = for {
           currentTime <- IO(System.currentTimeMillis())
           cache <- calendarCache.flatMap(_.get)
@@ -41,7 +42,10 @@ object Server extends IOApp {
           prepared <- IO( Logic.joinAndSort(parsed.get))
         } yield prepared.asJson.spaces2
 
-        Ok(getCalendarProg.unsafeRunSync())
+        val result = getCalendarProg.unsafeRunSync()
+        println("=== RESULT: " + result)
+
+        Ok(getCalendarProg.unsafeRunSync()) // TODO handle network failure
       }
   }
 
