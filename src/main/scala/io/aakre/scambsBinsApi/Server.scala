@@ -18,7 +18,7 @@ object Server extends IOApp {
 
   type Action = Kleisli[IO, Request[IO], Response[IO]]
 
-  val scambsIcalUrl = "https://refusecalendarapi.azurewebsites.net/calendar/ical/137912"
+  val scambsIcalUrl = "https://servicelayer3c.azure-api.net/wastecalendar/calendar/ical/10008078943"
 
   implicit val encodeDate: Encoder[Bin] = (a: Bin) =>  Encoder.encodeString(a.toString) //Json.fromString(a.toString)
 
