@@ -2,20 +2,35 @@
 Parser and REST API proxy server for South Cambridgeshire Council Bins (iCalendar)
 
 A intermediary rest api for https://www.scambs.gov.uk/bins/
-Will parse the ical public link for your address and provide a more usable API.
+Will parse the iCal public link for your address and provide a more usable API.
 
 Primarily made for smart home integration (reminding me to take out the right coloured bin)
 
 uses Scala, Cats and Http4s
 
-**NOTE: currently WIP, Parser done but REST api not started***
+**NOTE: currently WIP, Parser done, Rest api is query only and very basic**
 
-\* IE: it will turn a iCal file into `Seq[(Date, Seq[Bins])]`
+returns a Json array of the following object:
+```json
+{
+    "date" : {
+      "year" : 2020,
+      "month" : 3,
+      "day" : 20
+    },
+    "bins" : [
+      "GreenBin",
+      "BlueBin"
+    ]
+}
+```
 
 ## TODO
 - [x] make composed event parser that repeats until lastLine
 - [x] merge resulting Collection list on Date to get list of Blue + Green bins for certain dates
-- [ ] cache iCal file to avoid making too many responses
+- [ ] refine date types
+- [ ] rewrite using ZIO
+- [ ] cache remote iCal file (`Seq[(Date, Seq[Bins])]`?) to avoid repeated slow web requests
 - [ ] config file for timeout + url + location id
 - [ ] define rest api endpoints
 - [ ] create algorithms for doing queries

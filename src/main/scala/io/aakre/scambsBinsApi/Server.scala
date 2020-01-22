@@ -20,7 +20,7 @@ object Server extends IOApp {
 
   val scambsIcalUrl = "https://servicelayer3c.azure-api.net/wastecalendar/calendar/ical/10008078943"
 
-  implicit val encodeDate: Encoder[Bin] = (a: Bin) =>  Encoder.encodeString(a.toString) //Json.fromString(a.toString)
+  implicit val encodeDate: Encoder[Bin] = (a: Bin) =>  Encoder.encodeString(a.toString)
 
   val binService: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> Root / "bins" =>
