@@ -28,10 +28,10 @@ returns a Json array of the following object:
 ## TODO
 - [x] make composed event parser that repeats until lastLine
 - [x] merge resulting Collection list on Date to get list of Blue + Green bins for certain dates
-- [ ] refine date types
 - [ ] rewrite using ZIO
+- [ ] refine date types
 - [ ] cache remote iCal file (`Seq[(Date, Seq[Bins])]`?) to avoid repeated slow web requests
-- [ ] config file for timeout + url + location id
+- [ ] config file for timeout + url + location id. use pureconfig
 - [ ] define rest api endpoints
 - [ ] create algorithms for doing queries
 - [ ] wire up everything in http4s
