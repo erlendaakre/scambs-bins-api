@@ -1,12 +1,5 @@
 package io.aakre.scambsBinsApi
 
-import cats.effect.IO
-import org.http4s.client._
-
-object Network {
-  def readFromUrl(url: String, c: Client[IO]): IO[String] = c.expect[String](url)
-}
-
 import scala.util.parsing.combinator._
 object ICalParsers extends RegexParsers {
   def calendarStartLine: Parser[String]     = "BEGIN:VCALENDAR"
