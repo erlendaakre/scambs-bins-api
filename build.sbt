@@ -1,8 +1,9 @@
-val CatsVersion = "1.2.0"
-val Http4sVersion = "0.20.17"
+val CatsVersion = "2.0.0"
+val Http4sVersion = "0.20.10"
 val CirceVersion = "0.11.0"
 val ScalaTestVersion = "3.0.5"
 val ParserCombinatorVersion = "1.1.1"
+
 val ZIOVersion = "1.0.0-RC17"
 val ZIOCatsInteropVersion = "2.0.0.0-RC10"
 
