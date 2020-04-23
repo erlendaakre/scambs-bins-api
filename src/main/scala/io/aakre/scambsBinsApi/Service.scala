@@ -27,7 +27,7 @@ object Service {
 
 //  implicit val encodeCollection: Encoder[Collection] = (c: Collection) =>
 
-  def binService(client: Client[Task])= HttpRoutes.of[Task] {
+  def binService(client: Client[Task]) = HttpRoutes.of[Task] {
     case GET -> Root / "bins" =>
 
       for {
