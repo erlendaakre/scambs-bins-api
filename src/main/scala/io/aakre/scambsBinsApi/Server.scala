@@ -1,4 +1,4 @@
-package zhx.servers
+package io.aakre.scambsBinsApi
 
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.server.blaze._
