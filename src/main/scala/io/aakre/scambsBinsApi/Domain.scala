@@ -31,10 +31,10 @@ object ICalParsers extends RegexParsers {
   def eventEndLine: Parser[String]          = "END:VEVENT"
   def eventParser: Parser[Collection]       = eventStartLine ~ uidLine ~ timeStampLine ~
                                               dateLine ~ summaryLine ~ eventEndLine             ^^
-                                              { case _ ~ _ ~ _ ~ d ~ b ~ _ => Collection(d,Seq(b)) }
+                                              { case _ ~ _ ~ _ ~ d ~ b ~ _ => Collection(d,List(b)) }
 
-  def eventsParser: Parser[Seq[Collection]] = eventParser.*
-  def iCalParser: Parser[Seq[Collection]]   = headerParser ~> eventsParser <~ calendarEndLine
+  def eventsParser: Parser[List[Collection]] = eventParser.*
+  def iCalParser: Parser[List[Collection]]   = headerParser ~> eventsParser <~ calendarEndLine
 
   def calendarEndLine: Parser[String]       = "END:VCALENDAR"
 
@@ -43,14 +43,4 @@ object ICalParsers extends RegexParsers {
     case "Green" => GreenBin
     case "Black" => BlackBin
   }
-}
-
-object Logic { // Rename me
-  val joinAndSort: Seq[Collection] => Seq[Collection] = joinBinsOnDate _ andThen sortByDate
-
-  private def joinBinsOnDate(cs: Seq[Collection]) =
-    cs.groupBy(_.date).map(t => Collection(t._1, t._2.flatMap(_.bins))).toSeq
-
-  private def sortByDate(cs: Seq[Collection]) = cs.sortBy(c => c.date)
-
 }

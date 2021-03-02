@@ -98,7 +98,7 @@ class ParserSpec extends FlatSpec with Matchers with TestData {
     val p = parse(eventParser, TestEvent1)
     p.successful shouldBe true
     p.isEmpty shouldBe false
-    p.get shouldEqual Collection(Date(2019, 2, 14), Seq(GreenBin))
+    p.get shouldEqual Collection(Date(2019, 2, 14), List(GreenBin))
   }
 
   it should "parse several multiline events" in {
@@ -106,8 +106,8 @@ class ParserSpec extends FlatSpec with Matchers with TestData {
     p.successful shouldBe true
     p.isEmpty shouldBe false
     p.get.length shouldBe 2
-    p.get should contain(Collection(Date(2019, 2, 14), Seq(GreenBin)))
-    p.get should contain(Collection(Date(2019, 2, 14), Seq(BlueBin)))
+    p.get should contain(Collection(Date(2019, 2, 14), List(GreenBin)))
+    p.get should contain(Collection(Date(2019, 2, 14), List(BlueBin)))
   }
 
   it should "parse an entire calendar (header+events)" in {
@@ -115,8 +115,8 @@ class ParserSpec extends FlatSpec with Matchers with TestData {
     p.successful shouldBe true
     p.isEmpty shouldBe false
     p.get.length shouldBe 6
-    p.get should contain(Collection(Date(2019, 2, 15), Seq(BlackBin)))
-    p.get should contain(Collection(Date(2019, 3, 15), Seq(BlackBin)))
+    p.get should contain(Collection(Date(2019, 2, 15), List(BlackBin)))
+    p.get should contain(Collection(Date(2019, 3, 15), List(BlackBin)))
     p.get.count(_.bins.contains(GreenBin)) shouldBe 1
     p.get.count(_.bins.contains(BlueBin)) shouldBe 2
     p.get.count(_.bins.contains(BlackBin)) shouldBe 3

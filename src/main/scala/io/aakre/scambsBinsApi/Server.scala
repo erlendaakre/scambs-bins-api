@@ -13,7 +13,6 @@ import io.circe.generic.auto._
 import io.circe.syntax._
 import org.http4s.client.Client
 
-import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.global
 
 object Server extends IOApp {
@@ -36,12 +35,10 @@ object Server extends IOApp {
   def binProg(client: Client[IO]): IO[String] = for {
     rawIcal <- Network.readFromUrl(scambsIcalUrl, client)
     parsed <- IO(ICalParsers.parse(ICalParsers.iCalParser, rawIcal))
-    prepared <- IO( Logic.joinAndSort(parsed.get))
+    prepared <- IO( Collection.joinAndSort(parsed.get))
   } yield prepared.asJson.spaces2
 
   def run(args: List[String]): IO[ExitCode] = {
-   // val ec: ExecutionContext = ExecutionContext.global
-
     BlazeServerBuilder[IO]
       .bindHttp(1701, "localhost")
       .withHttpApp(binsApp)
