@@ -18,16 +18,18 @@ final case class Collection(date: Date, bins: List[Bin]) { self =>
    * @param that the second collection to copy the bins from
    * @return a new collection with combined bins
    */
-  def +(that: Collection): Collection = {
+  def ++(that: Collection): Collection = {
     Collection(date, self.bins ++ that.bins)
   }
+
+  def +(bin: Bin): Collection = this.copy(bins = bin :: bins)
 }
 
 object Collection {
   def joinAndSort: List[Collection] => List[Collection] = joinBinsOnDate _ andThen sortByDate
 
   private def joinBinsOnDate(cs: List[Collection]) =
-    cs.groupBy(_.date).map(t => Collection(t._1, t._2.flatMap(_.bins))).toList
+    cs.groupBy(_.date).map { case (date, bins) => Collection(date, bins.flatMap(_.bins)) }.toList
 
   private def sortByDate(cs: List[Collection]) = cs.sortBy(c => c.date)
 }

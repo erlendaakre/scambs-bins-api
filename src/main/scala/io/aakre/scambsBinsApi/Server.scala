@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.global
 
 object Server extends IOApp {
 
-  type Action = Kleisli[IO, Request[IO], Response[IO]]
+  type Action = Kleisli[IO, Request[IO], Response[IO]] // fixy
 
   val scambsIcalUrl = "https://servicelayer3c.azure-api.net/wastecalendar/calendar/ical/10008078943"
 
