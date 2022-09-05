@@ -15,32 +15,34 @@ import org.http4s.client.Client
 
 import scala.concurrent.ExecutionContext.global
 
+/**
+ * Simple http4s web server rendering the bins collection calendar as json
+ */
 object Server extends IOApp {
-
-  type Action = Kleisli[IO, Request[IO], Response[IO]] // fixy
 
   val scambsIcalUrl = "https://servicelayer3c.azure-api.net/wastecalendar/calendar/ical/10008078943"
 
-  implicit val encodeDate: Encoder[Bin] = (a: Bin) =>  Encoder.encodeString(a.toString)
+  type Action = Kleisli[IO, Request[IO], Response[IO]]
+  implicit val encodeDate: Encoder[Bin] = (a: Bin) => Encoder.encodeString(a.toString)
+
+  def binProg(client: Client[IO]): IO[String] = for {
+    rawIcal <- Network.readFromUrl(scambsIcalUrl, client)
+    parsed <- IO(ICalParsers.parse(ICalParsers.iCalParser, rawIcal))
+    prepared <- IO(Collection.joinAndSort(parsed.get))
+  } yield prepared.asJson.spaces2
 
   val binService: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> Root / "bins" =>
       BlazeClientBuilder[IO](global).resource.use { client =>
-        Ok(binProg(client).unsafeRunSync())
+        Ok(binProg(client))
       }
   }
 
   val binsApp: Action = Router("/" -> binService).orNotFound
 
-  def binProg(client: Client[IO]): IO[String] = for {
-    rawIcal <- Network.readFromUrl(scambsIcalUrl, client)
-    parsed <- IO(ICalParsers.parse(ICalParsers.iCalParser, rawIcal))
-    prepared <- IO( Collection.joinAndSort(parsed.get))
-  } yield prepared.asJson.spaces2
-
   def run(args: List[String]): IO[ExitCode] = {
-    BlazeServerBuilder[IO]
-      .bindHttp(1701, "localhost")
+    BlazeServerBuilder[IO](global)
+      .bindHttp(9056, "localhost")
       .withHttpApp(binsApp)
       .resource
       .use(_ => IO.never)
