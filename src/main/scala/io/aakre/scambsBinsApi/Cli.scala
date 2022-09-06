@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext.global
 object Cli extends IOApp {
   val scambsIcalUrl = "https://servicelayer3c.azure-api.net/wastecalendar/calendar/ical/10008078943"
 
-  def prog(client: Client[IO]): IO[String] = for {
+  private def prog(client: Client[IO]): IO[String] = for {
     rawIcal <- Network.readFromUrl(scambsIcalUrl, client)
     parsed <- IO(ICalParsers.parse(ICalParsers.iCalParser, rawIcal))
     prepared <- IO(Collection.joinAndSort(parsed.get))
@@ -35,14 +35,16 @@ object Cli extends IOApp {
     else None
   }
 
-  def run(args: List[String]): IO[ExitCode] = {
-    // TODO: if collection next day return bins in string form
-    // TODO: concourse pipeline to pipe output of program into home assistant webhook:
-    //       curl -X POST -H "Content-Type: application/json" -d '{ "message": "" }' http://....
-
-    val result = BlazeClientBuilder[IO](global).resource.use { client =>
-      prog(client)
+  def run(args: List[String]): IO[ExitCode] =
+    BlazeClientBuilder[IO](global).resource.use { client =>
+      for {
+        text <- prog(client)
+        _ <- IO(println(text))
+        code <- IO(if (text.isEmpty) ExitCode.Error else ExitCode.Success)
+      } yield code
     }
-    IO(ExitCode.Success)
-  }
 }
+// TODO: implement Date.isTomorrow
+
+// TODO: concourse pipeline to pipe output of program into home assistant webhook:
+//       curl -X POST -H "Content-Type: application/json" -d '{ "message": "" }' http://....
