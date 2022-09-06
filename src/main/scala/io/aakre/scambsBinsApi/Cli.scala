@@ -12,17 +12,37 @@ import scala.concurrent.ExecutionContext.global
 object Cli extends IOApp {
   val scambsIcalUrl = "https://servicelayer3c.azure-api.net/wastecalendar/calendar/ical/10008078943"
 
-  def x =  {
-    BlazeClientBuilder[IO](global).resource.use { client =>
-      prog(client)
-    }
-  }
-
   def prog(client: Client[IO]): IO[String] = for {
     rawIcal <- Network.readFromUrl(scambsIcalUrl, client)
-  } yield rawIcal
+    parsed <- IO(ICalParsers.parse(ICalParsers.iCalParser, rawIcal))
+    prepared <- IO(Collection.joinAndSort(parsed.get))
+    text <- IO.pure(humanReadable(prepared.head))
+  } yield text.getOrElse("")
+
+  def humanReadable(c: Collection): Option[String] = {
+    def binToColour(b: Bin): String = b match {
+      case BlackBin => "Black"
+      case BlueBin => "Blue"
+      case GreenBin => "Green"
+    }
+
+    def binString: String = c match {
+      case c if c.bins.length == 1 => binToColour(c.bins.head)
+      case _ => c.bins.map(binToColour).mkString(" and ")
+    }
+
+    if (c.date.isTomorrow) Some(s"The ${binString} bin will be collected tomorrow")
+    else None
+  }
 
   def run(args: List[String]): IO[ExitCode] = {
+    // TODO: if collection next day return bins in string form
+    // TODO: concourse pipeline to pipe output of program into home assistant webhook:
+    //       curl -X POST -H "Content-Type: application/json" -d '{ "message": "" }' http://....
+
+    val result = BlazeClientBuilder[IO](global).resource.use { client =>
+      prog(client)
+    }
     IO(ExitCode.Success)
   }
 }
