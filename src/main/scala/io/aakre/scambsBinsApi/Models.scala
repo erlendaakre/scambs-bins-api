@@ -1,5 +1,7 @@
 package io.aakre.scambsBinsApi
 
+import java.time.LocalDate
+
 sealed trait Bin
 case object BlueBin extends Bin
 case object GreenBin extends Bin
@@ -10,10 +12,8 @@ final case class Date(year: Int, month: Int, day: Int) extends Ordered[Date] {
     Ordering.Tuple3(Ordering.Int, Ordering.Int, Ordering.Int).compare((year, month, day), (that.year, that.month, that.day))
   }
 
-  def isTomorrow: Boolean = {
-    // TODO
-    true
-  }
+  def isTomorrow: Boolean = isTomorrow(LocalDate.now())
+  def isTomorrow(now: LocalDate): Boolean = now.plusDays(1).isEqual(LocalDate.of(year, month, day))
 }
 
 final case class Collection(date: Date, bins: List[Bin]) { self =>

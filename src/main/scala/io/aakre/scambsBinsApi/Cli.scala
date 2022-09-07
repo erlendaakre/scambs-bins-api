@@ -40,11 +40,6 @@ object Cli extends IOApp {
       for {
         text <- prog(client)
         _ <- IO(println(text))
-        code <- IO(if (text.isEmpty) ExitCode.Error else ExitCode.Success)
-      } yield code
+      } yield ExitCode.Success
     }
 }
-// TODO: implement Date.isTomorrow
-
-// TODO: concourse pipeline to pipe output of program into home assistant webhook:
-//       curl -X POST -H "Content-Type: application/json" -d '{ "message": "" }' http://....
