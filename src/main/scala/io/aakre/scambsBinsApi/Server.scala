@@ -20,6 +20,7 @@ import scala.concurrent.ExecutionContext.global
  */
 object Server extends IOApp {
 
+  // TODO Y U Hardcoded?
   val scambsIcalUrl = "https://servicelayer3c.azure-api.net/wastecalendar/calendar/ical/10008078943"
 
   type Action = Kleisli[IO, Request[IO], Response[IO]]

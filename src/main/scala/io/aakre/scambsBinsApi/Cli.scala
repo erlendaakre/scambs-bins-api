@@ -10,6 +10,8 @@ import scala.concurrent.ExecutionContext.global
  * simple command line client that reports which bins are being collected tomorrow
  */
 object Cli extends IOApp {
+
+  // TODO Y U Hardcoded?
   val scambsIcalUrl = "https://servicelayer3c.azure-api.net/wastecalendar/calendar/ical/10008078943"
 
   private def prog(client: Client[IO]): IO[String] = for {
