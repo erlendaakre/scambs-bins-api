@@ -5,4 +5,4 @@ COPY . .
 
 RUN sbt package
 
-ENTRYPOINT ["sbt", "run"]
+ENTRYPOINT ["sbt", "--error", "run"]

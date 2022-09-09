@@ -14,7 +14,8 @@ Compile / run / mainClass := Some("io.aakre.scambsBinsApi.Cli")
 libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-effect" % CatsEffectVersion,
   "org.scala-lang.modules" %% "scala-parser-combinators" % ParserCombinatorVersion,
-  "org.scalatest" %% "scalatest" % ScalaTestVersion
+  "org.scalatest" %% "scalatest" % ScalaTestVersion,
+  "org.slf4j" % "slf4j-nop" % "2.0.0" % Runtime
 )
 
 libraryDependencies ++= Seq(
