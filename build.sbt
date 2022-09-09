@@ -6,8 +6,10 @@ val ParserCombinatorVersion = "1.1.1"
 
 val scalaVersion = "2.12.8"
 val sbtVersion = "1.4.3"
-val version = "0.1.0-SNAPSHOT"
+val version = "1.0.0"
 val organization = "io.aakre"
+
+Compile / run / mainClass := Some("io.aakre.scambsBinsApi.Cli")
 
 libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-effect" % CatsEffectVersion,
