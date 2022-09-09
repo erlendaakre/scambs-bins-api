@@ -28,4 +28,9 @@ class DomainSpec extends FlatSpec with Matchers {
     val fakeNow = LocalDate.of(2022, 9, 30)
     assert(collection.date.isTomorrow(fakeNow))
   }
+  "checking if collection date is tomorrow" should "return true if today is NYE" in {
+    val collection = Collection(Date(2024, 1,1), List(BlueBin, GreenBin))
+    val fakeNow = LocalDate.of(2023, 12, 31)
+    assert(collection.date.isTomorrow(fakeNow))
+  }
 }
