@@ -1,7 +1,7 @@
 package io.aakre.scambsBinsApi
 
 import cats.effect.IO
-import org.http4s.client._
+import org.http4s.client.Client
 
 object Network {
   def readFromUrl(url: String, c: Client[IO]): IO[String] = c.expect[String](url)
