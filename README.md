@@ -25,12 +25,8 @@ The proxy api returns a chronologically sorted Json array of the following "coll
 ```
 
 ## TODO
-- [x] make composed event parser that repeats until lastLine
-- [x] merge resulting Collection list on Date to get list of Blue + Green bins for certain dates
-- [x] make CLI
-- [ ] location id hardcoded, no bueno
-- [ ] rewrite using ZIO
-- [ ] cache remote iCal file (`Seq[(Date, Seq[Bins])]`?) to avoid repeated slow web requests
+- [ ] location id hardcoded, fix (param for CLI) 
+- [ ] cache remote iCal file (`Seq[(Date, Seq[Bins])]`?) to avoid repeated slow web requests for API
 
 ## Setup
 * Getting your relevant link from [scambs website](https://www.scambs.gov.uk/bins/)
