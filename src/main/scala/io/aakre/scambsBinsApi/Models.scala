@@ -14,6 +14,8 @@ final case class Date(year: Int, month: Int, day: Int) extends Ordered[Date] {
 
   def isTomorrow: Boolean = isTomorrow(LocalDate.now())
   def isTomorrow(now: LocalDate): Boolean = now.plusDays(1).isEqual(LocalDate.of(year, month, day))
+  def isInPast: Boolean = isInPast(LocalDate.now())
+  def isInPast(now: LocalDate): Boolean = LocalDate.of(year,month,day).isBefore(now)
 }
 
 final case class Collection(date: Date, bins: List[Bin]) { self =>
@@ -22,10 +24,12 @@ final case class Collection(date: Date, bins: List[Bin]) { self =>
 }
 
 object Collection {
-  def joinAndSort: List[Collection] => List[Collection] = joinBinsOnDate _ andThen sortByDate
+  def joinAndSort: List[Collection] => List[Collection] = joinBinsOnDate andThen sortByDate andThen dropCollectionsInPast
 
-  private def joinBinsOnDate(cs: List[Collection]) =
+  val joinBinsOnDate = (cs: List[Collection]) =>
     cs.groupBy(_.date).map { case (date, bins) => Collection(date, bins.flatMap(_.bins)) }.toList
 
-  private def sortByDate(cs: List[Collection]) = cs.sortBy(c => c.date)
+  val sortByDate = (cs: List[Collection]) => cs.sortBy(c => c.date)
+
+  val dropCollectionsInPast = (cs: List[Collection]) => cs.filterNot(c => c.date.isInPast)
 }
