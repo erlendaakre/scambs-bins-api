@@ -7,11 +7,12 @@ import org.http4s.client.blaze.BlazeClientBuilder
 import scala.concurrent.ExecutionContext.global
 
 /**
- * simple command line client that reports which bins are being collected tomorrow
+ * Simple command line client that reports which bins are being collected tomorrow
+ * in a human readable format (for TTS use via home assistant)
  */
 object Cli extends IOApp {
 
-  // TODO Y U Hardcoded?
+  // TODO: Pass this in from concourse job
   val scambsIcalUrl = "https://servicelayer3c.azure-api.net/wastecalendar/calendar/ical/10008078943"
 
   private def prog(client: Client[IO]): IO[String] = for {
